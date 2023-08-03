@@ -181,7 +181,7 @@ func makeQuery(sex string, countFirstLitName int, countAll int) (string, error) 
 }
 
 func randName() string {
-	return "\"" + lastNames[rand.Intn(20)] + " " + firstNames[rand.Intn(20)] + " " + middleNames[rand.Intn(20)] + "\""
+	return "\"" + lastNames[rand.Intn(len(lastNames))] + " " + firstNames[rand.Intn(len(firstNames))] + " " + middleNames[rand.Intn(len(middleNames))] + "\""
 }
 
 func randNameF() string {
