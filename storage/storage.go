@@ -17,5 +17,4 @@ type Storage interface {
 	CreateAutoRecords(sex string, count int) error
 	PrintRecordsByArguments() error
 	PrintRecordsByArgumentsIndexed() error
-	//CreateIndex() error
 }

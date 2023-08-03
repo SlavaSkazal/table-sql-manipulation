@@ -35,8 +35,6 @@ func main() {
 			return
 		}
 	case 2:
-		//go run main.go 2 Kirin Alexandr Fedorovich 1990-11-10 male
-		//go run main.go 2 Olgina Alexandra Igorevna 1995-06-10 female
 		if len(os.Args) < 7 {
 			fmt.Println(makeErr("not enough args"))
 			return

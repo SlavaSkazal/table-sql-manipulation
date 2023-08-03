@@ -73,7 +73,7 @@ func (db *Database) PrintUniqueRecords() error {
 	if !existTable {
 		return db.makeErrTableNotExist()
 	}
-	//надо уникальные только по имя+дата
+	//надо уникальные только по имя+дата, но не по полу
 	rows, err := db.dbSql.Query("SELECT DISTINCT name, birthday, sex FROM users ORDER BY name") //WHERE
 	if err != nil {
 		return err
@@ -91,8 +91,7 @@ func (db *Database) CreateAutoRecords(sex string, count int) error {
 		return db.makeErrTableNotExist()
 	}
 
-	query, err := makeQuery(sex, count, 1000000) //1000000
-	//fmt.Println(query)
+	query, err := makeQuery(sex, count, 1000000)
 	if err != nil {
 		return err
 	}
@@ -152,7 +151,6 @@ func (db *Database) PrintRecordsByArgumentsIndexed() error {
 	return nil
 }
 
-// здесь можно горутины запустить?
 func makeQuery(sex string, countFirstLitName int, countAll int) (string, error) {
 	if countFirstLitName > countAll {
 		return "", fmt.Errorf("error: %v", "very match count")
