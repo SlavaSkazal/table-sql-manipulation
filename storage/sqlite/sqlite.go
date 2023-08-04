@@ -73,7 +73,6 @@ func (db *Database) PrintUniqueRecords() error {
 	if !existTable {
 		return db.makeErrTableNotExist()
 	}
-	//надо уникальные только по имя+дата, но не по полу
 	rows, err := db.dbSql.Query("SELECT DISTINCT name, birthday, sex FROM users ORDER BY name") //WHERE
 	if err != nil {
 		return err
