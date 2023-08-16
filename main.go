@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
-	"gitlab.com/slavaskazal1/ptmk/storage"
-	"gitlab.com/slavaskazal1/ptmk/storage/sqlite"
+	"log"
 	"os"
 	"strconv"
 	"time"
+
+	_ "github.com/mattn/go-sqlite3"
+	"gitlab.com/slavaskazal1/ptmk/models"
+	"gitlab.com/slavaskazal1/ptmk/storage/sqlite"
 )
 
 func main() {
@@ -23,33 +25,24 @@ func main() {
 	}
 
 	switch num {
-	case 1:
-		db, err := createDB()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		err = db.CreateTable()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
 	case 2:
 		if len(os.Args) < 7 {
 			fmt.Println(makeErr("not enough args"))
 			return
 		}
+
 		name := os.Args[2] + " " + os.Args[3] + " " + os.Args[4]
+
 		birthday, err := time.Parse("2006-01-02", os.Args[5])
 		if err != nil {
-			fmt.Println(err)
-			return
+			log.Fatal(err)
 		}
-		var sex string
+
+		var sex models.Sex
 		if os.Args[6] == "male" {
-			sex = "male"
+			sex = models.Male
 		} else if os.Args[6] == "female" {
-			sex = "female"
+			sex = models.Female
 		} else {
 			fmt.Println(makeErr("not valid sex"))
 			return
@@ -57,58 +50,35 @@ func main() {
 
 		db, err := createDB()
 		if err != nil {
-			fmt.Println(err)
-			return
+			log.Fatal(err)
 		}
-		user := storage.User{Name: name, Birthday: birthday, Sex: sex}
+
+		user := models.User{Name: name, Birthday: birthday, Sex: sex}
 		err = db.CreateRecord(user)
 		if err != nil {
-			fmt.Println(err)
-			return
+			log.Fatal(err)
 		}
-	case 3:
+	case 1, 3, 4, 5, 6:
 		db, err := createDB()
 		if err != nil {
-			fmt.Println(err)
-			return
+			log.Fatal(err)
 		}
-		err = db.PrintUniqueRecords()
-		if err != nil {
-			fmt.Println(err)
-			return
+
+		switch num {
+		case 1:
+			err = db.CreateTable()
+		case 3:
+			err = db.PrintUniqueRecords()
+		case 4:
+			//err = db.CreateAutoRecords("\"male\"", 100)
+			err = db.CreateAutoRecords(models.Male, 100)
+		case 5:
+			err = db.PrintRecordsByArguments()
+		case 6:
+			err = db.PrintRecordsByArgumentsIndexed()
 		}
-	case 4:
-		db, err := createDB()
 		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		err = db.CreateAutoRecords("\"male\"", 100)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	case 5:
-		db, err := createDB()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		err = db.PrintRecordsByArguments()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	case 6:
-		db, err := createDB()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		err = db.PrintRecordsByArgumentsIndexed()
-		if err != nil {
-			fmt.Println(err)
-			return
+			log.Fatal(err)
 		}
 	default:
 		fmt.Println(makeErr("wrong 1 arg"))
@@ -117,7 +87,7 @@ func main() {
 }
 
 func makeErr(strErr string) error {
-	return fmt.Errorf("error: %v", strErr)
+	return fmt.Errorf("error: %s", strErr)
 }
 
 func createDB() (*sqlite.Database, error) {
